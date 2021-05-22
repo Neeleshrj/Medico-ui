@@ -1,20 +1,59 @@
 import React from 'react';
+import { useState } from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ActivityIndicator,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 
 const SignIn = ({navigation}) => {
+
+  function onSignUp() {
+    setTimeout( () => {
+      return fetch('http://10.0.2.2:3000/api/users/', {
+      method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fullname: name, 
+          email: email,
+          password: password,
+        })
+      })
+      .then( (response) => {
+        if(!response.ok){
+          console.log(response);
+        }
+        return response;
+      })
+      .then((response) => response.json())
+      .then((json) => console.log(json))
+      .catch((error) => {
+        console.log(error);
+        
+      });
+    }, 2000)
+  }
+
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPass] = useState('');
+  const [cpass, setCPass] = useState('');
+  const [loading, setLoading] = useState(false);
   return (
     <LinearGradient
       style={{flex: 1}}
@@ -28,27 +67,48 @@ const SignIn = ({navigation}) => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.inner}>
               <Text style={styles.header}>Sign Up</Text>
-              <TextInput placeholder="Full Name" style={styles.input} />
-              <TextInput placeholder="Email" style={styles.input} />
+              <ActivityIndicator 
+                size="large" 
+                animating={loading} 
+                color="#ffffff" 
+                style={{justifyContent: 'center', alignItems: 'center', marginBottom: 10}}
+              />
+              <TextInput 
+                value={name}
+                onChangeText={name => setName(name)}
+                placeholder="Full Name" 
+                style={styles.input} 
+              />
+              <TextInput 
+                placeholder="Email" 
+                style={styles.input} 
+                value={email}
+                onChangeText={email => setEmail(email)}
+              />
               <TextInput 
                 placeholder="Password" 
                 style={styles.input} 
                 secureTextEntry={true}
+                value={password}
+                onChangeText={password => setPass(password)}
               />
               <TextInput 
                 placeholder="Confirm Password" 
                 style={styles.input} 
                 secureTextEntry={true}
+                value={cpass}
+                onChangeText={cpass => setCPass(cpass)}
               />
               <TouchableOpacity>
                 <View style={styles.btnContainer}>
                   <Text
                     style={{fontSize: 20, textAlign: 'center'}}
-                    onPress={() => navigation.navigate('SignUppass')}>
+                    onPress={() => onSignUp()}>
                     Sign Up
                   </Text>
                 </View>
               </TouchableOpacity>
+              
               <View
                 style={[
                   styles.btnContainer,
@@ -93,8 +153,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   header: {
-    fontSize: 64,
-    marginBottom: 48,
+    fontSize: 54,
+    marginBottom: 10,
     color: '#ffffff',
     fontFamily: 'Nunito-SemiBold',
   },

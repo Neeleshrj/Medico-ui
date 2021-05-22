@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Keyboard,
@@ -10,12 +10,44 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ActivityIndicator,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 
 const SignIn = ({navigation}) => {
+
+
+  function onSignIn() {
+    setLoading(true);
+    //setTimeout only added to check if loading icon works or not
+    setTimeout( () => {
+      return fetch('http://10.0.2.2:3000/api/auth/', {
+      method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: pass,
+        })
+      })
+      .then((response) => response.json())
+      .then((json) => console.log(json.authToken))
+      .then(setLoading(false),setEmail(''),setPass(''))
+      .catch((error) => {
+        console.log(error);
+        Alert.alert('Email or Password Invalid');
+      });
+    }, 2000)
+    
+  } 
+
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [loading, setLoading] = useState(false);
   return (
     <LinearGradient
       style={{flex: 1}}
@@ -29,9 +61,18 @@ const SignIn = ({navigation}) => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.inner}>
               <Text style={styles.header}>Welcome{'\n'}Back!</Text>
-              <TextInput placeholder="Email" style={styles.input} /> 
-              <TextInput 
+              <TextInput
+                autoCorrect={false} 
+                placeholder="Email"
+                value={email}
+                onChangeText={email => setEmail(email)} 
+                style={styles.input} 
+              /> 
+              <TextInput
+                autoCorrect={false} 
                 placeholder="Password"
+                value={pass}
+                onChangeText={pass=> setPass(pass)}
                 style={styles.input} 
                 secureTextEntry={true}
               />
@@ -44,90 +85,20 @@ const SignIn = ({navigation}) => {
               </TouchableOpacity>
               <TouchableOpacity>
                 <View style={styles.btnContainer}>
+                
                   <Text
                     style={{fontSize: 20, textAlign: 'center'}}
-                    onPress={() => Alert.alert('Sign In')}>
+                    onPress={() => onSignIn()}>
                     Sign In
-                  </Text>
+                  </Text>   
                 </View>
               </TouchableOpacity>
-              <View
-                style={[
-                  styles.btnContainer,
-                  {
-                    backgroundColor: 'transparent',
-                    borderColor: 'transparent',
-                    elevation: 0,
-                  },
-                ]}>
-                <Text style={{fontSize: 15, textAlign: 'center'}}>
-                  Or Sign In using
-                </Text>
-              </View>
-              <TouchableOpacity>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    padding: 5,
-                  }}>
-                  <View
-                    style={[
-                      styles.btnContainer,
-                      {width: '40%', backgroundColor: '#ffffff'},
-                    ]}>
-                    <View
-                      style={{justiftyContent: 'center', alignItems: 'center'}}>
-                      <Icon
-                        name="logo-google"
-                        size={20}
-                        onPress={() =>
-                          Alert.alert('Login using Google')
-                        }></Icon>
-                    </View>
-                  </View>
-                  <View
-                    style={[
-                      styles.btnContainer,
-                      {width: '40%', backgroundColor: '#ffffff'},
-                    ]}>
-                    <View
-                      style={{justiftyContent: 'center', alignItems: 'center'}}>
-                      <Icon
-                        name="logo-facebook"
-                        style={styles.icon}
-                        size={20}
-                        onPress={() =>
-                          Alert.alert('Login using Google')
-                        }></Icon>
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <View
-                  style={[
-                    styles.btnContainer,
-                    {
-                      backgroundColor: 'transparent',
-                      borderColor: 'transparent',
-                      elevation: 0,
-                    },
-                  ]}>
-                  <Text 
-                    style={{fontSize: 15, textAlign: 'center',color: "#1e272e"}}    
-                  >
-                    
-                    Not Registered? 
-                      <Text 
-                        style={{color: "#ffffff"}}
-                        onPress={()=>navigation.navigate('SignUp')}
-                      >
-                        Click Here
-                      </Text>
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              <ActivityIndicator 
+                size="large" 
+                animating={loading} 
+                color="#ffffff" 
+                style={{justifyContent: 'center', alignItems: 'center', marginTop: 20}}
+              />
               <View style={{flex: 1}} />
             </View>
           </TouchableWithoutFeedback>
@@ -150,7 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   header: {
-    fontSize: 64,
+    fontSize: 54,
     marginBottom: 48,
     color: '#ffffff',
     fontFamily: 'Nunito-SemiBold',
