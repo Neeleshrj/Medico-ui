@@ -14,16 +14,16 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const SignIn = ({navigation}) => {
 
 
-  function onSignIn() {
+  async function onSignIn() {
     setLoading(true);
     //setTimeout only added to check if loading icon works or not
     setTimeout( () => {
-      return fetch('http://10.0.2.2:3000/api/auth/', {
+      fetch('http://10.0.2.2:3000/api/auth/', {
       method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -35,15 +35,24 @@ const SignIn = ({navigation}) => {
         })
       })
       .then((response) => response.json())
-      .then((json) => console.log(json.authToken))
-      .then(setLoading(false),setEmail(''),setPass(''))
+      .then((json) => afterSignIn(json))
+      .then(setLoading(false))
       .catch((error) => {
         console.log(error);
-        Alert.alert('Email or Password Invalid');
       });
     }, 2000)
-    
   } 
+
+  function afterSignIn(response)
+  {
+    if(response.status == 200){
+      Alert.alert('Signed In!',response.authToken);
+    }
+    else{
+      Alert.alert("Error!",response.error);
+    }
+    return response;
+  }
 
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
@@ -61,6 +70,12 @@ const SignIn = ({navigation}) => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.inner}>
               <Text style={styles.header}>Welcome{'\n'}Back!</Text>
+              <ActivityIndicator 
+                size="large" 
+                animating={loading} 
+                color="#ffffff" 
+                style={{justifyContent: 'center', alignItems: 'center', marginTop: hp('1%'), marginBottom: hp('3%')}}
+              />
               <TextInput
                 autoCorrect={false} 
                 placeholder="Email"
@@ -78,7 +93,7 @@ const SignIn = ({navigation}) => {
               />
               <TouchableOpacity>
                 <Text
-                  style={{marginBottom: 5, fontSize: 16}}
+                  style={{marginBottom: hp('1%'), fontSize: hp('2.25%')}}
                   onPress={() => Alert.alert('Forget password page')}>
                   Forgot Your Password?
                 </Text>
@@ -87,18 +102,13 @@ const SignIn = ({navigation}) => {
                 <View style={styles.btnContainer}>
                 
                   <Text
-                    style={{fontSize: 20, textAlign: 'center'}}
+                    style={{fontSize: hp('2.5%'), textAlign: 'center'}}
                     onPress={() => onSignIn()}>
                     Sign In
                   </Text>   
                 </View>
               </TouchableOpacity>
-              <ActivityIndicator 
-                size="large" 
-                animating={loading} 
-                color="#ffffff" 
-                style={{justifyContent: 'center', alignItems: 'center', marginTop: 20}}
-              />
+              
               <View style={{flex: 1}} />
             </View>
           </TouchableWithoutFeedback>
@@ -113,40 +123,35 @@ export default SignIn;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '15%',
+    marginTop: hp('6%'),
   },
   inner: {
-    padding: 24,
+    padding: '8%',
     flex: 1,
     justifyContent: 'flex-end',
   },
   header: {
-    fontSize: 54,
-    marginBottom: 48,
+    fontSize: hp('7.25%'),
+    marginBottom: hp('1%'),
     color: '#ffffff',
     fontFamily: 'Nunito-SemiBold',
   },
   input: {
-    fontSize: 22,
+    fontSize: hp('2.75%'),
     borderRadius: 35,
     backgroundColor: '#f5f6fa',
     opacity: 0.7,
     padding: '5%',
-    marginBottom: 20,
+    marginBottom: '5%',
     elevation: 8,
     fontFamily: 'Nunito-SemiBold',
-    // flex: 1,
-    // height: "10%",
-    // borderColor: "#000000",
-    // borderBottomWidth: 1,
   },
   btnContainer: {
     backgroundColor: '#ff4757',
     opacity: 0.7,
-    marginTop: 12,
+    marginTop: hp('2%'),
     borderRadius: 25,
     padding: '3%',
-    width: '100%',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#ffffff',

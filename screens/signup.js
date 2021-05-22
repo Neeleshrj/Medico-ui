@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React,{useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -12,16 +11,20 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ActivityIndicator,
+  ScrollView,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 
 
 const SignIn = ({navigation}) => {
 
-  function onSignUp() {
+  async function onSignUp() {
+    setLoading(true);
     setTimeout( () => {
-      return fetch('http://10.0.2.2:3000/api/users/', {
+      fetch('http://10.0.2.2:3000/api/users/', {
       method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -31,23 +34,27 @@ const SignIn = ({navigation}) => {
           fullname: name, 
           email: email,
           password: password,
+          cPassword: cpass,
         })
       })
-      .then( (response) => {
-        if(!response.ok){
-          console.log(response);
-        }
-        return response;
-      })
-      .then((response) => response.json())
-      .then((json) => console.log(json))
+      .then( (response) => response.json())
+      .then((json) => afterSignUp(json))
+      .then(setLoading(false))
       .catch((error) => {
         console.log(error);
-        
       });
     }, 2000)
   }
 
+  async function afterSignUp(response)
+  {
+    if(response.status == 200){
+      Alert.alert('Signed Up!');
+    }
+    else{
+      Alert.alert("Error!",response.error);
+    }
+  }
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -65,13 +72,14 @@ const SignIn = ({navigation}) => {
         style={{flex: 1}}>
         <SafeAreaView style={styles.container}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <ScrollView>
             <View style={styles.inner}>
               <Text style={styles.header}>Sign Up</Text>
               <ActivityIndicator 
                 size="large" 
                 animating={loading} 
                 color="#ffffff" 
-                style={{justifyContent: 'center', alignItems: 'center', marginBottom: 10}}
+                style={{justifyContent: 'center', alignItems: 'center', marginBottom: hp('2%'), marginTop: hp('2%')}}
               />
               <TextInput 
                 value={name}
@@ -102,7 +110,7 @@ const SignIn = ({navigation}) => {
               <TouchableOpacity>
                 <View style={styles.btnContainer}>
                   <Text
-                    style={{fontSize: 20, textAlign: 'center'}}
+                    style={{fontSize: hp('2.5%'), textAlign: 'center'}}
                     onPress={() => onSignUp()}>
                     Sign Up
                   </Text>
@@ -119,7 +127,7 @@ const SignIn = ({navigation}) => {
                   },
                 ]}>
                 <Text 
-                  style={{fontSize: 15, textAlign: 'center'}}
+                  style={{fontSize: hp('2%'), textAlign: 'center'}}
                   
                 >
                   Already Registered?
@@ -133,6 +141,7 @@ const SignIn = ({navigation}) => {
               </View>
               <View style={{flex: 1}} />
             </View>
+            </ScrollView>
           </TouchableWithoutFeedback>
         </SafeAreaView>
       </KeyboardAvoidingView>
@@ -145,36 +154,35 @@ export default SignIn;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: '15%',
+    marginTop: hp('7%'),
   },
   inner: {
-    padding: 24,
+    padding: '8%',
     flex: 1,
     justifyContent: 'flex-end',
   },
   header: {
-    fontSize: 54,
-    marginBottom: 10,
+    fontSize: hp('7.25%'),
+    marginBottom: hp('0.05%'),
     color: '#ffffff',
     fontFamily: 'Nunito-SemiBold',
   },
   input: {
-    fontSize: 22,
+    fontSize: hp('2.75%'),
     borderRadius: 35,
     backgroundColor: '#f5f6fa',
     opacity: 0.7,
     padding: '5%',
-    marginBottom: 20,
+    marginBottom: hp('2.5%'),
     elevation: 8,
     fontFamily: 'Nunito-SemiBold',
   },
   btnContainer: {
     backgroundColor: '#ff4757',
     opacity: 0.7,
-    marginTop: 12,
+    marginTop: hp('2%'),
     borderRadius: 25,
     padding: '3%',
-    width: '100%',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#ffffff',
