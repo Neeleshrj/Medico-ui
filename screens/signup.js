@@ -18,32 +18,31 @@ import LinearGradient from 'react-native-linear-gradient';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 
-
 const SignIn = ({navigation}) => {
 
   async function onSignUp() {
     setLoading(true);
-    setTimeout( () => {
-      fetch('http://10.0.2.2:3000/api/users/', {
-      method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          fullname: name, 
-          email: email,
-          password: password,
-          cPassword: cpass,
-        })
+    
+    fetch('http://10.0.2.2:3000/api/users/', {
+    method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fullname: name, 
+        email: email,
+        password: password,
+        cPassword: cpass,
       })
-      .then( (response) => response.json())
-      .then((json) => afterSignUp(json))
-      .then(setLoading(false))
-      .catch((error) => {
-        console.log(error);
-      });
-    }, 2000)
+    })
+    .then( (response) => response.json())
+    .then((json) => afterSignUp(json))
+    .then(setLoading(false))
+    .catch((error) => {
+      console.log(error);
+    });
+    
   }
 
   async function afterSignUp(response)
@@ -67,12 +66,13 @@ const SignIn = ({navigation}) => {
       colors={['#FF0000', '#6284FF']}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}>
+      <ScrollView>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{flex: 1}}>
         <SafeAreaView style={styles.container}>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView>
+            
             <View style={styles.inner}>
               <Text style={styles.header}>Sign Up</Text>
               <ActivityIndicator 
@@ -107,11 +107,13 @@ const SignIn = ({navigation}) => {
                 value={cpass}
                 onChangeText={cpass => setCPass(cpass)}
               />
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {onSignUp()}}
+              >
                 <View style={styles.btnContainer}>
                   <Text
                     style={{fontSize: hp('2.5%'), textAlign: 'center'}}
-                    onPress={() => onSignUp()}>
+                    >
                     Sign Up
                   </Text>
                 </View>
@@ -141,10 +143,11 @@ const SignIn = ({navigation}) => {
               </View>
               <View style={{flex: 1}} />
             </View>
-            </ScrollView>
+            
           </TouchableWithoutFeedback>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      </ScrollView>
     </LinearGradient>
   );
 };

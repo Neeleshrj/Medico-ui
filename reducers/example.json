@@ -1,0 +1,25 @@
+[
+    {
+        "medicine": [
+            "Dolo 600mg",
+            "Cetrizen"
+        ],
+        "_id": "60a9690bc3852b2894a9dcbc",
+        "name": "Fever"
+    },
+    {
+        "medicine": [
+            "Cenarest"
+        ],
+        "_id": "60a97336ad8b243a189c62f5",
+        "name": "Cold"
+    },
+    {
+        "medicine": [
+            "Cetrizen",
+            "Turmeric Milk"
+        ],
+        "_id": "60a97336ad8b243jibsdiasb",
+        "name": "Cold"
+    }
+]

@@ -14,42 +14,41 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const SignIn = ({navigation}) => {
-
-
   async function onSignIn() {
     setLoading(true);
     //setTimeout only added to check if loading icon works or not
-    setTimeout( () => {
+    setTimeout(() => {
       fetch('http://10.0.2.2:3000/api/auth/', {
-      method: 'POST',
+        method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: email,
           password: pass,
-        })
+        }),
       })
-      .then((response) => response.json())
-      .then((json) => afterSignIn(json))
-      .then(setLoading(false))
-      .catch((error) => {
-        console.log(error);
-      });
-    }, 2000)
-  } 
+        .then(response => response.json())
+        .then(json => afterSignIn(json))
+        .then(setLoading(false))
+        .catch(error => {
+          console.log(error);
+        });
+    }, 2000);
+  }
 
-  function afterSignIn(response)
-  {
-    if(response.status == 200){
-      Alert.alert('Signed In!',response.authToken);
-    }
-    else{
-      Alert.alert("Error!",response.error);
+  function afterSignIn(response) {
+    if (response.status == 200) {
+      Alert.alert('Signed In!', response.authToken);
+    } else {
+      Alert.alert('Error!', response.error);
     }
     return response;
   }
@@ -70,25 +69,30 @@ const SignIn = ({navigation}) => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.inner}>
               <Text style={styles.header}>Welcome{'\n'}Back!</Text>
-              <ActivityIndicator 
-                size="large" 
-                animating={loading} 
-                color="#ffffff" 
-                style={{justifyContent: 'center', alignItems: 'center', marginTop: hp('1%'), marginBottom: hp('3%')}}
+              <ActivityIndicator
+                size="large"
+                animating={loading}
+                color="#ffffff"
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: hp('1%'),
+                  marginBottom: hp('3%'),
+                }}
               />
               <TextInput
-                autoCorrect={false} 
+                autoCorrect={false}
                 placeholder="Email"
                 value={email}
-                onChangeText={email => setEmail(email)} 
-                style={styles.input} 
-              /> 
+                onChangeText={email => setEmail(email)}
+                style={styles.input}
+              />
               <TextInput
-                autoCorrect={false} 
+                autoCorrect={false}
                 placeholder="Password"
                 value={pass}
-                onChangeText={pass=> setPass(pass)}
-                style={styles.input} 
+                onChangeText={pass => setPass(pass)}
+                style={styles.input}
                 secureTextEntry={true}
               />
               <TouchableOpacity>
@@ -98,17 +102,40 @@ const SignIn = ({navigation}) => {
                   Forgot Your Password?
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => onSignIn()}>
                 <View style={styles.btnContainer}>
-                
-                  <Text
-                    style={{fontSize: hp('2.5%'), textAlign: 'center'}}
-                    onPress={() => onSignIn()}>
+                  <Text style={{fontSize: hp('2.5%'), textAlign: 'center'}}>
                     Sign In
-                  </Text>   
+                  </Text>
                 </View>
               </TouchableOpacity>
-              
+
+              <TouchableOpacity>
+                <View
+                  style={[
+                    styles.btnContainer,
+                    {
+                      backgroundColor: 'transparent',
+                      borderColor: 'transparent',
+                      elevation: 0,
+                    },
+                  ]}>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      textAlign: 'center',
+                      color: '#1e272e',
+                    }}>
+                    Not Registered?
+                    <Text
+                      style={{color: '#ffffff'}}
+                      onPress={() => navigation.navigate('SignUp')}>
+                      Click Here
+                    </Text>
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
               <View style={{flex: 1}} />
             </View>
           </TouchableWithoutFeedback>
