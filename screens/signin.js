@@ -18,8 +18,11 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { useDispatch } from 'react-redux';
+import { addAuthToken, getMedList } from '../actions';
 
 const SignIn = ({navigation}) => {
+
   async function onSignIn() {
     setLoading(true);
     //setTimeout only added to check if loading icon works or not
@@ -44,9 +47,14 @@ const SignIn = ({navigation}) => {
     }, 2000);
   }
 
+  const dispatch = useDispatch();
+
   function afterSignIn(response) {
     if (response.status == 200) {
-      Alert.alert('Signed In!', response.authToken);
+      console.log('sign in succ');
+      navigation.navigate('Meds');
+      dispatch(addAuthToken(response.authToken, response.user_id));
+      dispatch(getMedList(response.authToken, response.user_id));
     } else {
       Alert.alert('Error!', response.error);
     }

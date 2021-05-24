@@ -10,17 +10,12 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-const SignIn = ({navigation}) => {
+const AddMeds = ({navigation}) => {
   return (
-    <LinearGradient
-      style={{flex: 1}}
-      colors={['#FF0000', '#6284FF']}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}>
+    
       <View 
         style={styles.container}
       >
@@ -55,11 +50,10 @@ const SignIn = ({navigation}) => {
            
       </View>    
       
-    </LinearGradient>
   );
 };
 
-export default SignIn;
+export default AddMeds;
 
 const styles = StyleSheet.create({
   container: {

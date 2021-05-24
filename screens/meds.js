@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -13,10 +13,10 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect, useDispatch } from 'react-redux';
-import { selectDisease } from '../actions';
+import { selectDisease, addAuthToken, getMedList } from '../actions';
 
 
-const Meds = ({MedList,selectDiseaseId,navigation}) => {
+const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
 
   if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -24,11 +24,17 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
     }
   }
 
+  
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getMedList(AuthToken[0],AuthToken[1]));
+  }, [])
+  
 
   function componentWillUpdate() {
     LayoutAnimation.spring();
   }
+
 
   function renderMedicine(id, description) {
     if ( id == selectDiseaseId){
@@ -92,7 +98,11 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
             </View>
           </TouchableWithoutFeedback>
           
-          <TouchableOpacity activeOpacity={0.5} style={styles.TouchableOpacityStyle}> 
+          <TouchableOpacity 
+            activeOpacity={0.5} 
+            style={styles.TouchableOpacityStyle}
+            onPress={ () => navigation.navigate('AddMeds')} 
+          > 
                 <Icon
                 name="add-outline"
                 size={60}
@@ -107,8 +117,9 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
 
 const  mapStateToProps = (state) =>{
   return {
+     AuthToken: state.AuthToken,
      MedList: state.MedList,
-     selectDiseaseId: state.selectedDiseaseId
+     selectDiseaseId: state.selectedDiseaseId,
   };
 }
 
