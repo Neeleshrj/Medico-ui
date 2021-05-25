@@ -8,7 +8,8 @@ import {
   TouchableWithoutFeedback,
   LayoutAnimation,
   UIManager,
-  AsyncStorage
+  AsyncStorage,
+  Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -16,7 +17,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { connect, useDispatch } from 'react-redux';
 import { selectDisease, getMedList, addAuthToken } from '../actions';
 
-const Meds = ({MedList,selectDiseaseId,navigation}) => {
+const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
 
   const [isLoading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -30,20 +31,6 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
   
   var authToken = '';
   var userId = '';
-  // useEffect(() => {
-  //   AsyncStorage.getItem('authToken')
-  //   .then( (token) => {
-  //     authToken = token;
-  //     AsyncStorage.getItem('userId')
-  //     .then( (id) => {
-  //       userId = id;
-  //       setLoading(false);
-  //       dispatch(getMedList(authToken,userId));
-  //       dispatch(addAuthToken(authToken,userId));
-  //     })
-  //   })
-  // },[]);
-
   useFocusEffect(
     React.useCallback(() => {
       AsyncStorage.getItem('authToken')
@@ -63,7 +50,40 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
     }, [])
   );
     
- 
+  function deleteMeds(id){
+    setLoading(true);
+    Alert.alert(
+      'Warning!',
+      'Are you sure you want to delete this?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('cancelled'),
+          style: 'cancel'
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            fetch('http://10.0.2.2:3000/api/diseases/'+id, {
+              method: 'DELETE',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'x-auth-token': AuthToken[0],
+              },  
+            })
+            .then( res => res.json())
+            .then( data => {
+              Alert.alert(data.message);
+              dispatch(getMedList(AuthToken[0],AuthToken[1]));
+            })
+            .catch(error => console.log(error));
+          }
+        }
+      ]
+    )
+    console.log(id);
+  }
 
 
   function componentWillUpdate() {
@@ -92,10 +112,22 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
         onPress={ () => {dispatch(selectDisease(medlist.item._id));componentWillUpdate()} }
       >
         <View style={styles.listContainer}>
-          <Text style={styles.disName}>
-            {medlist.item.name}
-          </Text>
-            {renderMedicine(medlist.item._id, medlist.item.medicine)}    
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.disName}>
+              {medlist.item.name} 
+            </Text>
+            <TouchableOpacity
+              onPress={() => deleteMeds(medlist.item._id)}
+            >
+                  <Icon
+                    name="trash-outline"
+                    size={32}
+                    style={{marginBottom: hp('1%'),marginTop: hp('1%'),color: 'red'}}
+                  >
+                  </Icon>
+            </TouchableOpacity>
+          </View>
+          {renderMedicine(medlist.item._id, medlist.item.medicine)}        
       </View>
       </TouchableWithoutFeedback>
       
@@ -120,8 +152,7 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
       >
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
-              onPress={ () => {_userLogout();navigation.navigate('SignIn');
-            }}
+              onPress={ () => _userLogout()}
             >
               <View style={styles.tabiconBox}>
                 <Icon 
@@ -152,10 +183,7 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
           <TouchableOpacity 
             activeOpacity={0.5} 
             style={styles.TouchableOpacityStyle}
-            onPress={ () => navigation.navigate('AddMeds', {
-              AuthToken: authToken,
-              UserId: userId,
-            })} 
+            onPress={ () => navigation.navigate('AddMeds')} 
           > 
                 <Icon
                 name="add-outline"
@@ -253,11 +281,12 @@ const styles = StyleSheet.create({
     marginBottom: hp('2%'),
   },
   disName: {
+    flex: 1,
     fontSize: hp('3.5%'),
     fontFamily: 'Nunito-SemiBold',
     letterSpacing: 2,
     marginBottom: hp('1%'),
-    marginTop: hp('1%')
+    marginTop: hp('1%'),
   },
   Medicines: {
     fontSize: hp('2.5%'),

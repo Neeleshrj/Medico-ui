@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
+  TouchableOpacity,
   ScrollView,
   AsyncStorage,
 } from 'react-native';
@@ -78,11 +79,35 @@ const AddMeds = ({AuthToken,navigation}) => {
     setInputs(_inputs);
   };
 
+
+  const _userLogout = () => {
+    AsyncStorage.removeItem('authToken')
+    .then( () => {
+      AsyncStorage.removeItem('userId')
+      .then( () => {
+        navigation.navigate('SignIn');
+      })
+      .catch( error => console.log(error));
+    })
+    .catch( error => console.log(error));  
+  }
+
   return (
     <View style={styles.container}>
       <View style={{flexDirection: 'row'}}>
         <View style={styles.tabiconBox}>
-          <Icon name="log-out-outline" style={styles.tabicon} size={60}></Icon>
+        <TouchableOpacity
+              onPress={ () => _userLogout()}
+            >
+              <View style={styles.tabiconBox}>
+                <Icon 
+                    name="log-out-outline"
+                    style={styles.tabicon}
+                    size={50}
+                >
+                </Icon>
+              </View>
+            </TouchableOpacity>
         </View>
         <View style={styles.headerbox}>
           <Text style={styles.header}>Add Disease</Text>
