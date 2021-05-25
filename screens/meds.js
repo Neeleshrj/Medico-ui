@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0652DD',
     borderRadius: 100,
     width: wp('18.5%'),
-    height: hp('10.75%'),
+    height: hp('9.75%'),
     color: '#ffffff',
     textAlign: 'center',
     padding: 8

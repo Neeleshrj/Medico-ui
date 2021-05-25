@@ -1,7 +1,5 @@
-import React,{setState, useEffect} from 'react';
-
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-
 import SignIn from '../screens/signin';
 import SignUp from '../screens/signup';
 import Meds from '../screens/meds';
@@ -17,7 +15,7 @@ const RootStackScreen = () => {
 
     return(
         <RootStack.Navigator headerMode="none">
-        {getToken() == null ? (
+        {getToken() == '' ? (
         <>
             <RootStack.Screen name='SignIn' component={SignIn} />
             <RootStack.Screen name='SignUp' component={SignUp} />
