@@ -20,7 +20,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { useDispatch } from 'react-redux';
-import { addAuthToken, getMedList } from '../actions';
+import { addAuthToken} from '../actions';
 
 
 const SignIn = ({navigation}) => {
@@ -41,6 +41,7 @@ const SignIn = ({navigation}) => {
         .then(response => response.json())
         .then(json => afterSignIn(json))
         .catch(error => {
+          setLoading(false);
           console.log(error);
         });
   }
@@ -60,6 +61,7 @@ const SignIn = ({navigation}) => {
         })
       })
     } else {
+      setLoading(false);
       Alert.alert('Error!', response.error);
     }
     return response;

@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   View,
   ScrollView,
+  AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -19,8 +20,9 @@ import { connect } from 'react-redux';
 const AddMeds = ({AuthToken,navigation}) => {
   const [inputs, setInputs] = useState([{key: '', value: ''}]);
   const [disName, setName] = useState('');
+  
 
-  const sendData = (authtokens) => {
+  const sendData = () => {
     let medArr = []
     inputs.forEach(element => {
       medArr.push(element.value);
@@ -31,10 +33,10 @@ const AddMeds = ({AuthToken,navigation}) => {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'x-auth-token': authtokens[0],
+          'x-auth-token': AuthToken[0],
         },
         body: JSON.stringify({
-          user: authtokens[1],
+          user: AuthToken[1],
           name: disName,
           medicine: medArr,
         }),
@@ -50,6 +52,7 @@ const AddMeds = ({AuthToken,navigation}) => {
     if (data.status == 200){
       Alert.alert(data.message);
       setInputs([{key: '', value: ''}]);
+      setName('');
     }
     else{
       Alert.alert(data.error);
@@ -94,7 +97,7 @@ const AddMeds = ({AuthToken,navigation}) => {
               size={34}></Icon>
             </View>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={ () => {sendData(AuthToken);Keyboard.dismiss}}>
+          <TouchableWithoutFeedback onPress={ () => {sendData();Keyboard.dismiss}}>
             <View style={[styles.addButton,{backgroundColor: '#3498db'}]} >
                 <Icon 
                 name="checkmark-outline" 

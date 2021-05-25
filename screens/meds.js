@@ -15,7 +15,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import { connect, useDispatch } from 'react-redux';
 import { selectDisease, getMedList, addAuthToken } from '../actions';
 
-const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
+const Meds = ({MedList,selectDiseaseId,navigation}) => {
 
   const [isLoading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -29,8 +29,6 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
   async function getTokens(key) {
     try{
         let value = await AsyncStorage.getItem(key);
-        console.log('inside getTokens');
-        console.log(value);
         return JSON.parse(value);
     }
     catch(error){
@@ -42,17 +40,15 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
   var authToken = '';
   var userId = '';
   useEffect(() => {
-    console.log("inside use effect");
     AsyncStorage.getItem('authToken')
     .then( (token) => {
       authToken = token;
-      console.log(authToken);
       AsyncStorage.getItem('userId')
       .then( (id) => {
         userId = id;
-        console.log(id);
         setLoading(false);
         dispatch(getMedList(authToken,userId));
+        dispatch(addAuthToken(authToken,userId));
       })
     })
   },[]);
@@ -112,7 +108,8 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
       >
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity
-              onPress={ () => {_userLogout();navigation.navigate('SignIn')}}
+              onPress={ () => {_userLogout();navigation.navigate('SignIn');
+            }}
             >
               <View style={styles.tabiconBox}>
                 <Icon 
@@ -143,7 +140,10 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
           <TouchableOpacity 
             activeOpacity={0.5} 
             style={styles.TouchableOpacityStyle}
-            onPress={ () => navigation.navigate('AddMeds')} 
+            onPress={ () => navigation.navigate('AddMeds', {
+              AuthToken: authToken,
+              UserId: userId,
+            })} 
           > 
                 <Icon
                 name="add-outline"

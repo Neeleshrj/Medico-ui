@@ -1,5 +1,3 @@
-import { AsyncStorage } from 'react-native';
-
 export const selectDisease = (diseaseId) => {
     return {
         type: 'select_disease',
