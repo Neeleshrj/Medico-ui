@@ -27,7 +27,7 @@ const SignIn = ({navigation}) => {
 
   async function onSignIn() {
     setLoading(true);
-      fetch('http://10.0.2.2:3000/api/auth/', {
+      fetch('https://fathomless-bayou-65608.herokuapp.com/api/auth/', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -62,7 +62,17 @@ const SignIn = ({navigation}) => {
       })
     } else {
       setLoading(false);
-      Alert.alert('Error!', response.error);
+      Alert.alert(
+        'Error!', 
+        response.error,
+        [
+          {
+            text: 'Retry',
+            onPress: () => console.log('retry..'),
+            style: 'cancel'
+          }
+        ]
+      );
     }
     return response;
   }

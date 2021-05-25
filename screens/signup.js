@@ -23,7 +23,7 @@ const SignIn = ({navigation}) => {
   async function onSignUp() {
     setLoading(true);
     
-    fetch('http://10.0.2.2:3000/api/users/', {
+    fetch('https://fathomless-bayou-65608.herokuapp.com/api/users/', {
     method: 'POST',
       headers: {
         Accept: 'application/json',

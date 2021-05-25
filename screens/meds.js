@@ -64,7 +64,7 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
         {
           text: 'Yes',
           onPress: () => {
-            fetch('http://10.0.2.2:3000/api/diseases/'+id, {
+            fetch('https://fathomless-bayou-65608.herokuapp.com/api/diseases/'+id, {
               method: 'DELETE',
               headers: {
                 Accept: 'application/json',
@@ -82,7 +82,6 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
         }
       ]
     )
-    console.log(id);
   }
 
 

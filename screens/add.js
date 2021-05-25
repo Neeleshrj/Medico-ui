@@ -29,7 +29,7 @@ const AddMeds = ({AuthToken,navigation}) => {
       medArr.push(element.value);
     });
     console.log(medArr);
-    fetch('http://10.0.2.2:3000/api/diseases/', {
+    fetch('https://fathomless-bayou-65608.herokuapp.com/api/diseases/', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -96,18 +96,21 @@ const AddMeds = ({AuthToken,navigation}) => {
     <View style={styles.container}>
       <View style={{flexDirection: 'row'}}>
         <View style={styles.tabiconBox}>
-        <TouchableOpacity
-              onPress={ () => _userLogout()}
-            >
+        
               <View style={styles.tabiconBox}>
+              <TouchableOpacity
+                onPress={ () => _userLogout()}
+              >
                 <Icon 
                     name="log-out-outline"
                     style={styles.tabicon}
-                    size={50}
+                    size={40}
                 >
                 </Icon>
+              </TouchableOpacity>
+                
               </View>
-            </TouchableOpacity>
+            
         </View>
         <View style={styles.headerbox}>
           <Text style={styles.header}>Add Disease</Text>
@@ -195,6 +198,7 @@ const styles = StyleSheet.create({
   },
   tabicon: {
     marginTop: hp('2%'),
+    marginLeft: wp('2%'),
     color: '#3498db',
   },
   headerbox: {

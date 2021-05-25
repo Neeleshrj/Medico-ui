@@ -15,7 +15,7 @@ export const addAuthToken = (authToken, user_id) => {
 export const getMedList = (authToken,user_id) => {
     return function(dispatch){
         console.log('fetch request activated');
-        fetch('http://10.0.2.2:3000/api/getmeds/', {
+        fetch('https://fathomless-bayou-65608.herokuapp.com/api/getmeds/', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
