@@ -83,7 +83,7 @@ const SignIn = ({navigation}) => {
   return (
     <LinearGradient
       style={{flex: 1}}
-      colors={['#FF0000', '#6284FF']}
+      colors={['#ff3838', '#f1f2f6']}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}>
       <KeyboardAvoidingView
