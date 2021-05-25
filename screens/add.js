@@ -1,59 +1,156 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   StyleSheet,
   Text,
-  Image,
+  Keyboard,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import { connect } from 'react-redux';
 
-const AddMeds = ({navigation}) => {
+const AddMeds = ({AuthToken,navigation}) => {
+  const [inputs, setInputs] = useState([{key: '', value: ''}]);
+  const [disName, setName] = useState('');
+
+  const sendData = (authtokens) => {
+    let medArr = []
+    inputs.forEach(element => {
+      medArr.push(element.value);
+    });
+    console.log(medArr);
+    fetch('http://10.0.2.2:3000/api/diseases/', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'x-auth-token': authtokens[0],
+        },
+        body: JSON.stringify({
+          user: authtokens[1],
+          name: disName,
+          medicine: medArr,
+        }),
+      })
+      .then(res => res.json())
+      .then((data) => onSubmit(data))
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  const onSubmit = (data) => {
+    if (data.status == 200){
+      Alert.alert(data.message);
+      setInputs([{key: '', value: ''}]);
+    }
+    else{
+      Alert.alert(data.error);
+    }
+  }
+
+
+  const addHandler = () => {
+    const _inputs = [...inputs];
+    _inputs.push({key: '', value: ''});
+    setInputs(_inputs);
+  };
+
+  const deleteHandler = key => {
+    const _inputs = inputs.filter((input, index) => index != key);
+    setInputs(_inputs);
+  };
+
+  const inputHandler = (text, key) => {
+    const _inputs = [...inputs];
+    _inputs[key].value = text;
+    _inputs[key].key = key;
+    setInputs(_inputs);
+  };
+
   return (
-    
-      <View 
-        style={styles.container}
-      >
-          <View style={{flexDirection: 'row'}}>
-            <View style={styles.tabiconBox}>
+    <View style={styles.container}>
+      <View style={{flexDirection: 'row'}}>
+        <View style={styles.tabiconBox}>
+          <Icon name="log-out-outline" style={styles.tabicon} size={60}></Icon>
+        </View>
+        <View style={styles.headerbox}>
+          <Text style={styles.header}>Add Disease</Text>
+        </View>
+      </View>
+      <View style={{flex: 1,backgroundColor: '#ecf0f1'}}>
+        <View style={styles.btnContainer}>
+          <TouchableWithoutFeedback  onPress={() => addHandler()}>
+            <View style={styles.addButton}>
               <Icon 
-                  name="menu-outline"
-                  style={styles.tabicon}
-                  size={60}
+              name="add-outline" 
+              size={34}></Icon>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={ () => {sendData(AuthToken);Keyboard.dismiss}}>
+            <View style={[styles.addButton,{backgroundColor: '#3498db'}]} >
+                <Icon 
+                name="checkmark-outline" 
+                size={34}></Icon>   
+            </View>
+            
+          </TouchableWithoutFeedback>
+        </View>
+        <TextInput
+          autoCorrect={false}
+          style={[styles.input, {marginTop: hp('4%')}]}
+          placeholder="Disease Name"
+          value={disName}
+          onChangeText={disName => setName(disName)}
+        />
+
+        <ScrollView>
+          {inputs.map((input, key) => (
+            <View key={key} style={styles.inputContainer}>
+              <TextInput
+                autoCorrect={false}
+                style={[styles.inputMed,{flex: 4}]}
+                placeholder="Medicine Name"
+                value={input.value}
+                onChangeText={(text) => inputHandler(text, key)}
+              />
+              <TouchableWithoutFeedback
+                onPress = {()=> deleteHandler(key)}
               >
-              </Icon>
-            </View>
-            <View style={styles.headerbox}>
-              <Text style={styles.header}>Medicine List</Text>
-            </View>
-          </View>
-          <ScrollView style={{flex: 1,backgroundColor: 'yellow'}}>
-              <View style={styles.listContainer}>
-                  <Text>
-                      LIST
-                  </Text>
-              </View> 
-          </ScrollView>
-          <TouchableOpacity activeOpacity={0.5} style={styles.TouchableOpacityStyle}> 
+              <View style={styles.delButton}>
                 <Icon
-                name="add-outline"
-                size={60}
-                style={styles.FloatingButtonStyle}
+                  name="remove-outline"
+                  size={34}
+                  style={{color: 'red'}}
                 >
                 </Icon>
-          </TouchableOpacity>
-           
-      </View>    
-      
+
+              </View>
+              </TouchableWithoutFeedback>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
   );
 };
 
-export default AddMeds;
+const mapStateToProps = (state) => {
+  return {
+    AuthToken: state.AuthToken,
+  }
+}
+
+
+
+export default connect(mapStateToProps)(AddMeds);
 
 const styles = StyleSheet.create({
   container: {
@@ -84,44 +181,57 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito-SemiBold',
     letterSpacing: 4,
     //fontWeight: 'bold',
-    
   },
-  listContainer: {
-    backgroundColor: 'green',
-    marginLeft: wp('6%'),
-    marginRight: wp('6%'),
-    padding: 20,
-    alignItems: 'center',
-    marginTop: hp('4%'),
+  input: {
+    fontSize: hp('2.75%'),
     borderRadius: 20,
-    elevation: 8,
-  },
-  TouchableOpacityStyle:{
-    position: 'absolute',
-    width: wp('18.5%'),
-    height: hp('10.75%'),
-    right: wp('8%'),
-    bottom: hp('4%'),
-  },
-  FloatingButtonStyle: {
-    backgroundColor: '#0652DD',
-    borderRadius: 100,
-    width: wp('18.5%'),
-    height: hp('10.75%'),
-    color: '#ffffff',
-    textAlign: 'center',
-    padding: 8
-  },
-  btnContainer: {
-    backgroundColor: '#ff4757',
-    opacity: 0.7,
+    backgroundColor: '#f5f6fa',
+    padding: '5%',
     marginTop: hp('2%'),
-    borderRadius: 25,
-    padding: '3%',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#ffffff',
-    elevation: 5,
+    marginBottom: hp('1%'),
+    marginHorizontal: wp('4%'),
+    elevation: 8,
     fontFamily: 'Nunito-SemiBold',
   },
+  inputMed: {
+    fontSize: hp('2.75%'),
+    borderRadius: 20,
+    backgroundColor: '#f5f6fa',
+    padding: '5%',
+    marginTop: hp('1%'),
+    marginBottom: hp('1%'),
+    marginHorizontal: wp('4%'),
+    elevation: 8,
+    fontFamily: 'Nunito-SemiBold',
+  },
+  btnContainer: {
+    marginTop: hp('4%'),
+    textAlign: 'center',
+    justifyContent: 'center',
+    fontFamily: 'Nunito-SemiBold',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  addButton: {
+    backgroundColor: '#2ecc71',
+    color: 'white',
+    padding: '2%',
+    borderRadius: hp('8%') / 2,
+    marginVertical: hp('1%'),
+    marginHorizontal: wp('5%'),
+    textAlign: 'center',
+  },
+  delButton: {
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: hp('1%'),
+    marginRight: wp('2%'),
+    textAlign: 'center',
+    flex: 1,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    flex: 1,
+  }
 });

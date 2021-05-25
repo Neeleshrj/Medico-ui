@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -9,14 +8,17 @@ import {
   TouchableWithoutFeedback,
   LayoutAnimation,
   UIManager,
+  AsyncStorage
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect, useDispatch } from 'react-redux';
-import { selectDisease, addAuthToken, getMedList } from '../actions';
-
+import { selectDisease, getMedList, addAuthToken } from '../actions';
 
 const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
+
+  const [isLoading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -24,12 +26,37 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
     }
   }
 
-  
-  const dispatch = useDispatch();
+  async function getTokens(key) {
+    try{
+        let value = await AsyncStorage.getItem(key);
+        console.log('inside getTokens');
+        console.log(value);
+        return JSON.parse(value);
+    }
+    catch(error){
+        console.log(error);
+    }  
+  }
+
+
+  var authToken = '';
+  var userId = '';
   useEffect(() => {
-    dispatch(getMedList(AuthToken[0],AuthToken[1]));
-  }, [])
-  
+    console.log("inside use effect");
+    AsyncStorage.getItem('authToken')
+    .then( (token) => {
+      authToken = token;
+      console.log(authToken);
+      AsyncStorage.getItem('userId')
+      .then( (id) => {
+        userId = id;
+        console.log(id);
+        setLoading(false);
+        dispatch(getMedList(authToken,userId));
+      })
+    })
+  },[]);
+
 
   function componentWillUpdate() {
     LayoutAnimation.spring();
@@ -67,20 +94,35 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
     );   
   }
 
-  
-  return (
+  function _userLogout() {
+    AsyncStorage.removeItem('authToken')
+    .then( () => {
+      AsyncStorage.removeItem('userId')
+      .then( () => {
+        navigation.navigate('SignIn');
+      })
+      .catch( error => console.log(error));
+    })
+    .catch( error => console.log(error));     
+  }
+
+    return (
       <View 
         style={styles.container}
       >
           <View style={{flexDirection: 'row'}}>
-            <View style={styles.tabiconBox}>
-              <Icon 
-                  name="menu-outline"
-                  style={styles.tabicon}
-                  size={60}
-              >
-              </Icon>
-            </View>
+            <TouchableOpacity
+              onPress={ () => {_userLogout();navigation.navigate('SignIn')}}
+            >
+              <View style={styles.tabiconBox}>
+                <Icon 
+                    name="log-out-outline"
+                    style={styles.tabicon}
+                    size={50}
+                >
+                </Icon>
+              </View>
+            </TouchableOpacity>
             <View style={styles.headerbox}>
               <Text style={styles.header}>Medicine List</Text>
             </View>
@@ -113,6 +155,8 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
            
       </View>
   );
+  
+  
 };
 
 const  mapStateToProps = (state) =>{
@@ -140,6 +184,7 @@ const styles = StyleSheet.create({
   },
   tabicon: {
     marginTop: hp('2%'),
+    marginLeft: wp('2%'),
     color: '#3498db',
   },
   headerbox: {

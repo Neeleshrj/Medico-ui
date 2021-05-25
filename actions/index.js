@@ -1,3 +1,5 @@
+import { AsyncStorage } from 'react-native';
+
 export const selectDisease = (diseaseId) => {
     return {
         type: 'select_disease',
@@ -12,7 +14,7 @@ export const addAuthToken = (authToken, user_id) => {
     };
 };
 
-export const getMedList = (authToken, user_id) => {
+export const getMedList = (authToken,user_id) => {
     return function(dispatch){
         console.log('fetch request activated');
         fetch('http://10.0.2.2:3000/api/getmeds/', {
@@ -28,7 +30,6 @@ export const getMedList = (authToken, user_id) => {
         })
         .then(res => res.json())
         .then(data => {
-            console.log('json or not?');
             console.log(data);
             dispatch({
                 type: 'GET_LIST',

@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   ActivityIndicator,
   View,
+  AsyncStorage
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -21,12 +22,11 @@ import {
 import { useDispatch } from 'react-redux';
 import { addAuthToken, getMedList } from '../actions';
 
+
 const SignIn = ({navigation}) => {
 
   async function onSignIn() {
     setLoading(true);
-    //setTimeout only added to check if loading icon works or not
-    setTimeout(() => {
       fetch('http://10.0.2.2:3000/api/auth/', {
         method: 'POST',
         headers: {
@@ -40,11 +40,9 @@ const SignIn = ({navigation}) => {
       })
         .then(response => response.json())
         .then(json => afterSignIn(json))
-        .then(setLoading(false))
         .catch(error => {
           console.log(error);
         });
-    }, 2000);
   }
 
   const dispatch = useDispatch();
@@ -52,9 +50,15 @@ const SignIn = ({navigation}) => {
   function afterSignIn(response) {
     if (response.status == 200) {
       console.log('sign in succ');
-      navigation.navigate('Meds');
-      dispatch(addAuthToken(response.authToken, response.user_id));
-      dispatch(getMedList(response.authToken, response.user_id));
+      dispatch(addAuthToken(response.authToken,response.user_id));
+      AsyncStorage.setItem('authToken', response.authToken)
+      .then( () => {
+        AsyncStorage.setItem('userId', response.user_id)
+        .then( () => {
+          setLoading(false);
+          navigation.navigate('Meds');
+        })
+      })
     } else {
       Alert.alert('Error!', response.error);
     }
