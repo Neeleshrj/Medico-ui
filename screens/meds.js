@@ -11,6 +11,7 @@ import {
   AsyncStorage
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useFocusEffect } from '@react-navigation/native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { connect, useDispatch } from 'react-redux';
 import { selectDisease, getMedList, addAuthToken } from '../actions';
@@ -26,32 +27,43 @@ const Meds = ({MedList,selectDiseaseId,navigation}) => {
     }
   }
 
-  async function getTokens(key) {
-    try{
-        let value = await AsyncStorage.getItem(key);
-        return JSON.parse(value);
-    }
-    catch(error){
-        console.log(error);
-    }  
-  }
-
-
+  
   var authToken = '';
   var userId = '';
-  useEffect(() => {
-    AsyncStorage.getItem('authToken')
-    .then( (token) => {
-      authToken = token;
-      AsyncStorage.getItem('userId')
-      .then( (id) => {
-        userId = id;
-        setLoading(false);
-        dispatch(getMedList(authToken,userId));
-        dispatch(addAuthToken(authToken,userId));
-      })
-    })
-  },[]);
+  // useEffect(() => {
+  //   AsyncStorage.getItem('authToken')
+  //   .then( (token) => {
+  //     authToken = token;
+  //     AsyncStorage.getItem('userId')
+  //     .then( (id) => {
+  //       userId = id;
+  //       setLoading(false);
+  //       dispatch(getMedList(authToken,userId));
+  //       dispatch(addAuthToken(authToken,userId));
+  //     })
+  //   })
+  // },[]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      AsyncStorage.getItem('authToken')
+        .then( (token) => {
+          authToken = token;
+          AsyncStorage.getItem('userId')
+          .then( (id) => {
+            userId = id;
+            setLoading(false);
+            dispatch(getMedList(authToken,userId));
+            dispatch(addAuthToken(authToken,userId));
+          })
+        })
+      return () => {
+        console.log('cleanup');
+      };
+    }, [])
+  );
+    
+ 
 
 
   function componentWillUpdate() {

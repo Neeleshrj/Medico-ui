@@ -16,11 +16,11 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
+import meds from './meds';
 
 const AddMeds = ({AuthToken,navigation}) => {
   const [inputs, setInputs] = useState([{key: '', value: ''}]);
   const [disName, setName] = useState('');
-  
 
   const sendData = () => {
     let medArr = []
@@ -42,7 +42,7 @@ const AddMeds = ({AuthToken,navigation}) => {
         }),
       })
       .then(res => res.json())
-      .then((data) => onSubmit(data))
+      .then((data) => {onSubmit(data)})
       .catch(error => {
         console.log(error);
       });
