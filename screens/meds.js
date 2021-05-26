@@ -134,9 +134,9 @@ const Meds = ({MedList,selectDiseaseId,AuthToken,navigation}) => {
   }
 
   function _userLogout() {
-    AsyncStorage.removeItem('authToken')
+    AsyncStorage.setItem('authToken','')
     .then( () => {
-      AsyncStorage.removeItem('userId')
+      AsyncStorage.setItem('userId','')
       .then( () => {
         navigation.navigate('SignIn');
       })

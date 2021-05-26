@@ -7,7 +7,9 @@ import reducers from './reducers/rootReducer';
 import { NavigationContainer } from '@react-navigation/native';
 import RootStackScreen from './navigation/rootstackscreens';
 
+
 const App = () => {
+
   const store = createStore(reducers, {}, applyMiddleware(ReduxThunk))
 
   return (
@@ -16,7 +18,6 @@ const App = () => {
         <RootStackScreen />
       </NavigationContainer>
     </Provider>
-    
   );
 };
 
