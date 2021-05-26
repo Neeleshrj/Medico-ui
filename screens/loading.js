@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {StyleSheet, ActivityIndicator,} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   widthPercentageToDP as wp,
@@ -24,7 +24,16 @@ const Loading = ({navigation}) => {
       colors={['#ff3838', '#f1f2f6']}
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}>
-      <Text style={styles.header}>Loading...</Text>
+      <ActivityIndicator
+        size="large"
+        animating={true}
+        color="#ffffff"
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: hp('50%'),
+        }}
+      />
     </LinearGradient>
   );
 };
